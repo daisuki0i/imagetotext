@@ -1,59 +1,53 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	// ลบส่วนที่ไม่จำเป็น เช่น การ import รูปภาพ และ component อื่น ๆ ออกไป
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Image to Text</title>
+	<meta name="description" content="Image Text Processing" />
+    <link href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap" rel="stylesheet">
+
 </svelte:head>
 
 <section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
+	<h1 style="font-size: 3rem; font-weight: bold; color: #C22020; font-family: 'Kanit'; sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">
+		IMAGE <span style="color: #000000;">to</span> <span style="color: #1D8B92;">TEXT 🇬🇧🇹🇭</span>
 	</h1>
 
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
+	<h2 style="font-size: 2rem; margin-top: 20px; font-family: 'Jomhuria', sans-serif;">
+		Image Text Processing
 	</h2>
+	<p style="font-size: 1.5rem; text-align: center; max-width: 600px; font-family: 'Jomhuria', sans-serif;">
+		Image Text Processing is an AI for converting a picture to text so people can use text for searching similar picture or topic.
+	</p>
 
-	<Counter />
+	<h2 style="font-size: 2rem; margin-top: 20px; font-family: 'Jomhuria', sans-serif;">
+		How to use
+	</h2>
+	<p style="font-size: 1.5rem; text-align: center; max-width: 600px; font-family: 'Jomhuria', sans-serif;">
+		Insert picture on an "Insert Picture" box. Then, select the language you prefer. Finally click the "Convert" button for converting the picture to text.
+	</p>
+	
 </section>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
+    section {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
+        align-items: center;
+        text-align: center;
+        height: 100vh;
+        padding: 20px;
+    }
 
-	h1 {
-		width: 100%;
-	}
+    h1, h2{
+        margin: 0;
+    }
 
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
+    p {
+        margin: 10px 0;
+    }
 </style>
+
+
