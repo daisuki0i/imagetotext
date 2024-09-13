@@ -1,18 +1,19 @@
 <script>
-	import Header from './Header.svelte';
-	import '../app.css';
+	// ไม่มีการนำเข้าเพิ่มเติมเนื่องจาก Header ถูกลบไปแล้ว
 </script>
 
 <div class="app">
-	<Header />
-
+	<!-- ลบการเรียกใช้ Header ที่ไม่มีอยู่แล้ว -->
 	<main>
 		<slot />
 	</main>
 
-	<!-- <footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer> -->
+	<footer>
+		<p style="font-size: 1.5rem; text-align: center; max-width: 600px; font-family: 'Jomhuria', sans-serif; color: #000000">
+			This website is created for <span style="color: #C22020;">AI Projects</span> only
+		</p>
+
+	</footer>
 </div>
 
 <style>
@@ -39,10 +40,6 @@
 		justify-content: center;
 		align-items: center;
 		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
 	}
 
 	@media (min-width: 480px) {
