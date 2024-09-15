@@ -3,25 +3,24 @@
   import ImageUpload from "../components/ImageUpload.svelte";
   import ImageResult from "../components/ImageResult.svelte";
 
-  let imageUrl: string | null = null;
-  let text: string = "";
-  let language: string[] = []; // เปลี่ยนเป็น array เพื่อรับค่าภาษาหลายภาษา
+  let imageUrls: string[] = [];
+  let texts: string[] = [];
+  let language: string[] = [];
 
-  // ฟังก์ชันสำหรับรับข้อมูลจาก ImageUpload เมื่อกดปุ่ม Convert
+  // ฟังก์ชันจัดการเมื่อข้อมูลถูกส่งมาจาก ImageUpload
   function handleConvert(
-    uploadedImageUrl: string,
-    uploadedText: string,
+    uploadedImageUrls: string[],
+    uploadedTexts: string[],
     selectedLanguage: string[]
   ) {
-    imageUrl = uploadedImageUrl;
-    text = uploadedText;
+    imageUrls = uploadedImageUrls;
+    texts = uploadedTexts;
     language = selectedLanguage;
   }
 
-  // ฟังก์ชันสำหรับรีเซ็ตค่าของ pop-up เมื่อกดปุ่ม Clear
   function clearResult() {
-    imageUrl = null;
-    text = "";
+    imageUrls = [];
+    texts = [];
     language = [];
   }
 </script>
@@ -29,9 +28,9 @@
 <div class="page-container">
   <Hometext />
   <ImageUpload {handleConvert} />
-  {#if imageUrl}
-    <ImageResult {imageUrl} {text} {language} {clearResult} />
-  {/if}
+  {#each imageUrls as imageUrl, index}
+    <ImageResult {imageUrl} text={texts[index]} {language} {clearResult} />
+  {/each}
 </div>
 
 <style>

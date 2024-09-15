@@ -24,8 +24,7 @@
   </p>
 
   <h2 class="title">How to use</h2>
-  <p
-    class="headline">
+  <p class="headline">
     Insert picture on an "Insert Picture" box. Then, select the language you
     prefer. Finally click the "Convert" button for converting the picture to
     text.
@@ -42,7 +41,8 @@
     padding: 20px;
   }
 
-  h1,h2 {
+  h1,
+  h2 {
     margin: 0;
   }
 

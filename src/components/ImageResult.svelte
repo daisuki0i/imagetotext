@@ -8,6 +8,7 @@
   function handleClear() {
     clearResult(); // เรียกใช้งาน clearResult ที่ถูกส่งเข้ามาจาก +page.svelte
   }
+
   // ฟังก์ชันสำหรับการดาวน์โหลด
   function downloadFile() {
     alert("Download button clicked.");
@@ -19,20 +20,17 @@
     <img src={imageUrl} alt="Result Image" class="result-image" />
   </div>
   <div class="right-container">
-    <textarea class="result-text" readonly>{text}</textarea>
+    <textarea class="result-text">{text}</textarea>
     <div class="button-group">
       <!-- แสดงภาษาที่ผู้ใช้เลือกทั้งหมดในรูปแบบที่อ่านง่าย -->
-      <button class="language-button"
-        >{language
-          .map((lang) => (lang === "Thai" ? "TH" : "EN"))
-          .join(" & ")}</button
-      >
+      <button class="language-button">
+        {language.map((lang) => (lang === "Thai" ? "TH" : "EN")).join(" & ")}
+      </button>
       <div class="action-buttons">
         <button class="clear-button" on:click={handleClear}>Clear</button>
         <button class="reconvert-button">Re-convert</button>
         <!-- ปุ่มดาวน์โหลด -->
-        <button class="download-button" on:click={downloadFile}>Download</button
-        >
+        <button class="download-button" on:click={downloadFile}>Download</button>
       </div>
     </div>
   </div>
@@ -41,17 +39,17 @@
 <style>
   .result-container {
     border: 1px solid #ddd;
-    border-radius: 12px; /* เพิ่มขอบมน */
+    border-radius: 12px;
     padding: 15px;
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #ffffff; /* พื้นหลังสีขาว */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
-    max-width: 480px; /* กำหนดขนาดความกว้างให้เท่ากับกรอบอัปโหลดรูปภาพ */
-    width: 480px; /* กำหนดขนาดความกว้างให้เท่ากับกรอบอัปโหลดรูปภาพ */
-    margin: 10px auto; /* จัดให้อยู่กลางหน้า */
-    margin-top: 30px; /* ขยับขึ้นจากด้านล่าง */
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 480px;
+    width: 480px;
+    margin: 10px auto;
+    margin-top: 30px;
   }
 
   .right-container {
@@ -61,17 +59,19 @@
     gap: 10px;
   }
 
-  .image-container {
-    height: 120px;
-    overflow: hidden;
-    border-radius: 10px; /* เพิ่มขอบมนของภาพ */
-    border: 1px solid #ccc;
-  }
+.image-container {
+  width: 120px; /* กำหนดขนาดความกว้างเท่ากับความสูง */
+  height: 120px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
 
   .result-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    aspect-ratio: 1/1;
   }
 
   .result-text {
@@ -81,7 +81,7 @@
     padding: 8px;
     font-size: 14px;
     border: 1px solid #ddd;
-    border-radius: 8px; /* เพิ่มขอบมนของช่องข้อความ */
+    border-radius: 8px;
   }
 
   .button-group {
@@ -98,7 +98,7 @@
     font-size: 14px;
     background-color: #e0e0e0;
     border-radius: 5px;
-    text-transform: uppercase; /* แสดงภาษาเป็นตัวพิมพ์ใหญ่ */
+    text-transform: uppercase;
   }
 
   .action-buttons {
@@ -113,13 +113,13 @@
     border: 1px solid #000;
     background-color: #ffffff;
     cursor: pointer;
-    border-radius: 6px; /* เพิ่มขอบมน */
+    border-radius: 6px;
     transition: background-color 0.3s;
   }
 
   .clear-button:hover,
   .reconvert-button:hover,
   .download-button:hover {
-    background-color: #f2f2f2; /* สีเมื่อเอาเมาส์ไปวาง */
+    background-color: #f2f2f2;
   }
 </style>

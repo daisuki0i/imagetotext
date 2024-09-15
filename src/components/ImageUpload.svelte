@@ -1,22 +1,30 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import Cookies from "js-cookie"; // ใช้ js-cookie สำหรับจัดการคุกกี้
+
   export let handleConvert: (
-    uploadedImageUrl: string,
-    uploadedText: string,
-    selectedLanguage: string[]
+    uploadedImageUrls: string[], // รับ URL รูปภาพหลายรายการ
+    uploadedTexts: string[], // รับข้อความหลายรายการ
+    selectedLanguage: string[] // รับภาษาหลายภาษา
   ) => void;
 
-  let file: File | null = null; // เก็บไฟล์ที่อัปโหลด
+  let files: File[] = []; // เก็บไฟล์ที่อัปโหลดทั้งหมดในรูปแบบ array
   let selectedLanguage: string[] = []; // เก็บภาษาที่เลือกเป็น array
   let showUploadOptions: boolean = false; // ควบคุมการแสดง pop-up อัปโหลด
-  let imageUrl: string | null = null; // เก็บ URL ของรูปภาพที่อัปโหลด
+  let imageUrls: string[] = []; // เก็บ URL ของรูปภาพที่อัปโหลด
 
   // ฟังก์ชันสำหรับจัดการอัปโหลดไฟล์
   function handleFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      file = input.files[0];
-      imageUrl = URL.createObjectURL(file); // สร้าง URL สำหรับรูปภาพ
-      console.log("File uploaded:", file.name);
+    if (input.files && input.files.length > 0) {
+      files = Array.from(input.files); // แปลง FileList เป็น array
+      imageUrls = files.map((file) => URL.createObjectURL(file)); // สร้าง URL สำหรับรูปภาพแต่ละไฟล์
+
+      // คอมเมนต์ส่วนที่เกี่ยวข้องกับการใช้งานคุกกี้
+      // imageUrls.forEach((url, index) => {
+      //   Cookies.set(`uploadedImageUrl_${index}`, url, { expires: 7 }); // เก็บ URL ของรูปภาพในคุกกี้
+      // });
+
       showUploadOptions = false; // ปิด pop-up หลังจากอัปโหลด
     }
   }
@@ -27,9 +35,9 @@
   }
 
   // ฟังก์ชันสำหรับแปลงภาพเมื่อกดปุ่ม Convert
-  function convertImage() {
-    if (!file) {
-      alert("Please upload an image first.");
+  function convertImages() {
+    if (files.length === 0) {
+      alert("Please upload at least one image.");
       return;
     }
 
@@ -38,17 +46,15 @@
       return;
     }
 
-    if (!imageUrl) {
-      alert("Image URL is not available.");
-      return;
-    }
-
-    // ส่งข้อมูลกลับไปที่ +page.svelte โดยตรวจสอบให้ imageUrl เป็น string เสมอ
     handleConvert(
-      imageUrl || "",
-      "Generated text from backend",
+      imageUrls,
+      Array(files.length).fill("Generated text from backend"),
       selectedLanguage
     );
+
+    // เคลียร์ภาพที่ถูกอัปโหลดหลังการแปลง
+    files = [];
+    imageUrls = [];
   }
 
   // ฟังก์ชันสำหรับปิด pop-up เมื่อกดปุ่ม Cancel
@@ -67,12 +73,28 @@
       );
     }
   }
+
+  // คอมเมนต์ส่วนที่เกี่ยวข้องกับการโหลด URL ของรูปภาพจากคุกกี้เมื่อหน้าเว็บถูกเปิด
+  // onMount(() => {
+  //   let index = 0;
+  //   let savedImageUrl = Cookies.get(`uploadedImageUrl_${index}`);
+  //   while (savedImageUrl) {
+  //     imageUrls.push(savedImageUrl);
+  //     index++;
+  //     savedImageUrl = Cookies.get(`uploadedImageUrl_${index}`);
+  //   }
+  // });
 </script>
 
 <div class="upload-container">
-  <!-- แสดงชื่อไฟล์ที่อัปโหลด -->
-  {#if file}
-    <p class="file-name">Filename: {file.name}</p>
+  <!-- แสดงจำนวนและชื่อไฟล์ เฉพาะเมื่อมีไฟล์ที่ถูกอัปโหลด -->
+  {#if files.length > 0}
+    <div class="file-name-container">
+      <strong>Uploaded {files.length} files:</strong>
+      {#each files as file, index}
+        <span class="file-name">{file.name}{index < files.length - 1 ? ',' : ''}</span>
+      {/each}
+    </div>
   {/if}
 
   <!-- กรอบสำหรับการอัปโหลดไฟล์ -->
@@ -82,8 +104,12 @@
     on:click={openUploadPopup}
     aria-label="Upload Image"
   >
-    {#if imageUrl}
-      <img src={imageUrl} alt="Uploaded Image" class="uploaded-image" />
+    {#if imageUrls.length > 0}
+      <div class="image-gallery">
+        {#each imageUrls as url}
+          <img src={url} alt="Uploaded Image" class="uploaded-image" />
+        {/each}
+      </div>
     {:else}
       <p>Insert Image Here</p>
     {/if}
@@ -96,6 +122,7 @@
         id="fileInput"
         type="file"
         accept="image/*"
+        multiple
         on:change={handleFileUpload}
       />
       <button type="button" on:click={closeUploadPopup}>Cancel</button>
@@ -110,18 +137,15 @@
         <input type="checkbox" value="Thai" on:change={handleLanguageChange} /> Thai
       </label>
       <label>
-        <input
-          type="checkbox"
-          value="English"
-          on:change={handleLanguageChange}
-        /> English
+        <input type="checkbox" value="English" on:change={handleLanguageChange} /> English
       </label>
     </div>
 
     <!-- ปุ่ม Convert -->
-    <button class="convert-button" on:click={convertImage}>Convert</button>
+    <button class="convert-button" on:click={convertImages}>Convert</button>
   </div>
 </div>
+
 
 <style>
   .upload-container {
@@ -132,17 +156,30 @@
     margin-top: 10px;
   }
 
-  .file-name {
-    margin: 0;
-    font-size: 14px;
-    font-weight: normal;
-  }
+  .file-name-container {
+  display: flex;
+  flex-wrap: wrap; /* ให้ข้อความจัดเรียงต่อไปบรรทัดใหม่เมื่อเกินพื้นที่ */
+  gap: 5px;
+  max-width: 480px; /* กำหนดความกว้างสูงสุดให้เท่ากับกรอบที่อัปโหลดรูปภาพ */
+  margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างชื่อไฟล์กับกรอบ */
+}
+
+strong {
+  font-size: 14px;
+  color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
+}
+
+.file-name {
+  font-size: 14px;
+  color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
+  word-break: break-all; /* ตัดข้อความเมื่อยาวเกินไป */
+}
 
   .dropzone {
     border: 2px dashed #000;
     border-radius: 10px;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap; /* ทำให้สามารถแสดงหลายรูปในกรอบเดียวกัน */
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -155,10 +192,10 @@
   }
 
   .uploaded-image {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 50px; /* ปรับขนาดให้เล็กเพื่อแสดงหลายรูป */
+    max-height: 50px;
     object-fit: contain;
-    border: none;
+    margin: 2px;
   }
 
   .upload-popup {
