@@ -123,12 +123,24 @@
   .button-container {
     display: flex;
     gap: 10px;
-    justify-content: center;
+    justify-content: space-between; /* จัดปุ่มให้อยู่คนละด้าน */
     align-items: center;
     margin-top: 10px;
+    width: 100%; /* ทำให้ปุ่มเต็มพื้นที่กรอบ */
+    max-width: 500px; /* จำกัดความกว้างให้เท่ากับกรอบ */
   }
 
-  .download-button,
+  .download-button {
+    padding: 10px 20px;
+    border: 1px solid #000;
+    background-color: #fff;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 0; /* ปรับตำแหน่งปุ่มไปทางซ้ายให้ใกล้ขอบกรอบ */
+  }
+
   .convert-button {
     padding: 10px 20px;
     border: 1px solid #000;
@@ -137,7 +149,7 @@
     font-weight: bold;
     cursor: pointer;
     border-radius: 5px;
-    margin: 0 10px;
+    margin-right: 0; /* จัดปุ่มให้อยู่ชิดขวาของกรอบ */
   }
 
   .download-button:hover,
@@ -157,3 +169,5 @@
     font-size: 14px;
   }
 </style>
+
+  
