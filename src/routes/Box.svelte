@@ -10,37 +10,58 @@
         console.log("Clear was clicked.");
         // รอเขียนว่าจะให้ทำอะไร Clear
     }
+    function something() {
+        console.log("Clear was clicked.");
+        // รอเขียนว่าจะให้ทำอะไร Clear
+    }
   </script>
   
   <style>
-    .info-box {
-      display: flex;
+    .info-box {      
       align-items: center;
       background-color: #e0e0e0; 
       border-radius: 10px;
-      padding: 60px;
+      padding: 20px;
       max-width: 600px;
-      margin: 20px auto;      
+      margin: 10px auto;     
+      display: grid;
+      grid-template-rows: 100px 50px ;
+      grid-template-columns: 230px 230px;
+      gap: 8px; 
     }
   
-    .description {
-      flex-grow: 1;
+    .description {      
+      align-items: center;  
+      font-size: 10px;    
+      flex-grow: 1;   
       margin-left: 10px;
+      padding: 6px;
     }
-  
-    img {
-      width: 90px; 
-      border-radius: 5px;
-      /* margin-left: 10px; */
+      
+    .description-box {      
+      width: 200px;
+      height: 100px;
+      background-color: rgb(255, 255, 255);      
+      justify-content: center;
+      align-items: center;
+    }        
+    img {      
+      width: 180px; 
+      /* height: 90px; */
+      border-radius: 5px;      
     }
   </style>
   
-  <div class="info-box">
+  <div class="info-box">   
     <img src={imageUrl} alt="Image description"> 
-    <div class="description">{description}
-      <div class="buttons">
-          <button on:click={reconvert}>Reconvert</button>
-          <button on:click={clear}>Clear</button>
+    <div class="description description-box">{description}                
       </div>
-  </div>
-  </div>
+    <div>    
+      <button on:click={something}>something</button>          
+      </div>    
+    <div class="buttons">      
+          <button on:click={reconvert}>Reconvert</button>
+          <button on:click={clear}>Clear</button>         
+      </div>    
+  </div>  
+  

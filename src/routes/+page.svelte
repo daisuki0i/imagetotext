@@ -2,12 +2,15 @@
   // นำเข้า Hometext.svelte และ ImageUpload.svelte เพื่อใช้งานในหน้า +page.svelte
   import Hometext from "../components/Hometext.svelte";
   import ImageUpload from "../components/ImageUpload.svelte"; // ตรวจสอบเส้นทางให้ถูกต้องตามที่เก็บไฟล์
+  import Box from "./BOX.svelte";
+  
 </script>
 
 <!-- แสดง Hometext และ ImageUpload ใน container ที่จัดวางให้อยู่ตรงกลาง -->
 <div class="page-container">
   <Hometext />
   <ImageUpload />
+  <Box />
 </div>
 
 <style>
