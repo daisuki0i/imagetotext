@@ -1,6 +1,8 @@
 <script lang="ts">
+  export let handleConvert: (uploadedImageUrl: string, uploadedText: string, selectedLanguage: string[]) => void;
+
   let file: File | null = null; // เก็บไฟล์ที่อัปโหลด
-  let selectedLanguage: string = ""; // เก็บภาษาที่เลือก
+  let selectedLanguage: string[] = []; // เก็บภาษาที่เลือกเป็น array
   let showUploadOptions: boolean = false; // ควบคุมการแสดง pop-up อัปโหลด
   let imageUrl: string | null = null; // เก็บ URL ของรูปภาพที่อัปโหลด
 
@@ -27,12 +29,18 @@
       return;
     }
 
-    if (!selectedLanguage) {
-      alert("Please select a language before converting.");
+    if (selectedLanguage.length === 0) {
+      alert("Please select at least one language before converting.");
       return;
     }
 
-    alert(`Converting image: ${file.name}`);
+    if (!imageUrl) {
+      alert("Image URL is not available.");
+      return;
+    }
+
+    // ส่งข้อมูลกลับไปที่ +page.svelte โดยตรวจสอบให้ imageUrl เป็น string เสมอ
+    handleConvert(imageUrl || "", "Generated text from backend", selectedLanguage);
   }
 
   // ฟังก์ชันสำหรับการดาวน์โหลด
@@ -43,6 +51,16 @@
   // ฟังก์ชันสำหรับปิด pop-up เมื่อกดปุ่ม Cancel
   function closeUploadPopup() {
     showUploadOptions = false;
+  }
+
+  // ฟังก์ชันจัดการการเปลี่ยนแปลงภาษา
+  function handleLanguageChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.checked) {
+      selectedLanguage.push(input.value);
+    } else {
+      selectedLanguage = selectedLanguage.filter(lang => lang !== input.value);
+    }
   }
 </script>
 
@@ -87,10 +105,10 @@
     <!-- ปุ่มเลือกภาษา -->
     <div class="language-options">
       <label>
-        <input type="checkbox" value="Thai" bind:group={selectedLanguage} /> Thai
+        <input type="checkbox" value="Thai" on:change={handleLanguageChange} /> Thai
       </label>
       <label>
-        <input type="checkbox" value="English" bind:group={selectedLanguage} /> English
+        <input type="checkbox" value="English" on:change={handleLanguageChange} /> English
       </label>
     </div>
 
@@ -110,8 +128,8 @@
 
   .file-name {
     margin: 0;
-    font-size: 14px; /* ปรับขนาดข้อความให้เล็กลง */
-    font-weight: normal; /* ทำให้ข้อความไม่เป็นตัวหนา */
+    font-size: 14px;
+    font-weight: normal;
   }
 
   .dropzone {

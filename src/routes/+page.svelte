@@ -1,24 +1,44 @@
-<script>
-  // นำเข้า Hometext.svelte และ ImageUpload.svelte เพื่อใช้งานในหน้า +page.svelte
+<script lang="ts">
   import Hometext from "../components/Hometext.svelte";
-  import ImageUpload from "../components/ImageUpload.svelte"; // ตรวจสอบเส้นทางให้ถูกต้องตามที่เก็บไฟล์
+  import ImageUpload from "../components/ImageUpload.svelte";
+  import ImageResult from "../components/ImageResult.svelte";
+
+  let imageUrl: string | null = null;
+  let text: string = "";
+  let language: string[] = []; // เปลี่ยนเป็น array เพื่อรับค่าภาษาหลายภาษา
+
+  // ฟังก์ชันสำหรับรับข้อมูลจาก ImageUpload เมื่อกดปุ่ม Convert
+  function handleConvert(uploadedImageUrl: string, uploadedText: string, selectedLanguage: string[]) {
+    imageUrl = uploadedImageUrl;
+    text = uploadedText;
+    language = selectedLanguage;
+  }
+
+  // ฟังก์ชันสำหรับรีเซ็ตค่าของ pop-up เมื่อกดปุ่ม Clear
+  function clearResult() {
+    imageUrl = null;
+    text = "";
+    language = [];
+  }
 </script>
 
-<!-- แสดง Hometext และ ImageUpload ใน container ที่จัดวางให้อยู่ตรงกลาง -->
 <div class="page-container">
   <Hometext />
-  <ImageUpload />
+  <ImageUpload {handleConvert} />
+  {#if imageUrl}
+    <ImageResult {imageUrl} {text} {language} {clearResult} />
+  {/if}
 </div>
 
 <style>
   .page-container {
     display: flex;
-    flex-direction: column; /* จัดวางในแนวตั้ง */
-    justify-content: center; /* จัดให้อยู่กลางในแนวนอน */
-    align-items: center; /* จัดให้อยู่กลางในแนวตั้ง */
-    min-height: 100vh; /* ใช้พื้นที่เต็มหน้าจอแนวตั้ง */
-    overflow: auto; /* ทำให้เลื่อนขึ้นลงได้ */
-    padding: 20px; /* เพิ่มระยะห่าง */
-    box-sizing: border-box; /* รวม padding ในขนาดของ container */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
   }
 </style>
