@@ -2,12 +2,14 @@
   let file: File | null = null; // เก็บไฟล์ที่อัปโหลด
   let selectedLanguage: string = ""; // เก็บภาษาที่เลือก
   let showUploadOptions: boolean = false; // ควบคุมการแสดง pop-up อัปโหลด
+  let imageUrl: string | null = null; // เก็บ URL ของรูปภาพที่อัปโหลด
 
   // ฟังก์ชันสำหรับจัดการอัปโหลดไฟล์
   function handleFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       file = input.files[0];
+      imageUrl = URL.createObjectURL(file); // สร้าง URL สำหรับรูปภาพ
       console.log("File uploaded:", file.name);
       showUploadOptions = false; // ปิด pop-up หลังจากอัปโหลด
     }
@@ -39,6 +41,11 @@
 </script>
 
 <div class="upload-container">
+  <!-- แสดงชื่อไฟล์ที่อัปโหลด -->
+  {#if file}
+    <p class="file-name">Filename: {file.name}</p>
+  {/if}
+
   <!-- กรอบสำหรับการอัปโหลดไฟล์ -->
   <button
     type="button"
@@ -46,7 +53,11 @@
     on:click={openUploadPopup}
     aria-label="Upload Image"
   >
-    <p>Insert Image Here</p>
+    {#if imageUrl}
+      <img src={imageUrl} alt="Uploaded Image" class="uploaded-image" />
+    {:else}
+      <p>Insert Image Here</p>
+    {/if}
   </button>
 
   {#if showUploadOptions}
@@ -59,7 +70,6 @@
         on:change={handleFileUpload}
       />
       <button type="button" on:click={closeUploadPopup}>Cancel</button>
-      <!-- ปิด pop-up เมื่อกดปุ่ม Cancel -->
     </div>
   {/if}
 
@@ -88,8 +98,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     margin-top: 10px;
+  }
+
+  .file-name {
+    margin: 0;
+    font-size: 14px; /* ปรับขนาดข้อความให้เล็กลง */
+    font-weight: normal; /* ทำให้ข้อความไม่เป็นตัวหนา */
   }
 
   .dropzone {
@@ -105,6 +121,14 @@
     height: 150px;
     background-color: #f9f9f9;
     position: relative;
+    overflow: hidden;
+  }
+
+  .uploaded-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border: none;
   }
 
   .upload-popup {
@@ -123,11 +147,11 @@
   .button-container {
     display: flex;
     gap: 10px;
-    justify-content: space-between; /* จัดปุ่มให้อยู่คนละด้าน */
+    justify-content: space-between;
     align-items: center;
     margin-top: 10px;
-    width: 100%; /* ทำให้ปุ่มเต็มพื้นที่กรอบ */
-    max-width: 500px; /* จำกัดความกว้างให้เท่ากับกรอบ */
+    width: 100%;
+    max-width: 500px;
   }
 
   .download-button {
@@ -138,7 +162,6 @@
     font-weight: bold;
     cursor: pointer;
     border-radius: 5px;
-    margin-left: 0; /* ปรับตำแหน่งปุ่มไปทางซ้ายให้ใกล้ขอบกรอบ */
   }
 
   .convert-button {
@@ -149,7 +172,6 @@
     font-weight: bold;
     cursor: pointer;
     border-radius: 5px;
-    margin-right: 0; /* จัดปุ่มให้อยู่ชิดขวาของกรอบ */
   }
 
   .download-button:hover,
@@ -161,6 +183,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    margin-left: auto;
   }
 
   label {
