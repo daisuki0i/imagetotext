@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let handleConvert: (uploadedImageUrl: string, uploadedText: string, selectedLanguage: string[]) => void;
+  export let handleConvert: (
+    uploadedImageUrl: string,
+    uploadedText: string,
+    selectedLanguage: string[]
+  ) => void;
 
   let file: File | null = null; // เก็บไฟล์ที่อัปโหลด
   let selectedLanguage: string[] = []; // เก็บภาษาที่เลือกเป็น array
@@ -40,12 +44,11 @@
     }
 
     // ส่งข้อมูลกลับไปที่ +page.svelte โดยตรวจสอบให้ imageUrl เป็น string เสมอ
-    handleConvert(imageUrl || "", "Generated text from backend", selectedLanguage);
-  }
-
-  // ฟังก์ชันสำหรับการดาวน์โหลด
-  function downloadFile() {
-    alert("Download button clicked.");
+    handleConvert(
+      imageUrl || "",
+      "Generated text from backend",
+      selectedLanguage
+    );
   }
 
   // ฟังก์ชันสำหรับปิด pop-up เมื่อกดปุ่ม Cancel
@@ -59,7 +62,9 @@
     if (input.checked) {
       selectedLanguage.push(input.value);
     } else {
-      selectedLanguage = selectedLanguage.filter(lang => lang !== input.value);
+      selectedLanguage = selectedLanguage.filter(
+        (lang) => lang !== input.value
+      );
     }
   }
 </script>
@@ -99,16 +104,17 @@
 
   <!-- Container สำหรับปุ่ม -->
   <div class="button-container">
-    <!-- ปุ่มดาวน์โหลด -->
-    <button class="download-button" on:click={downloadFile}>Download</button>
-
     <!-- ปุ่มเลือกภาษา -->
     <div class="language-options">
       <label>
         <input type="checkbox" value="Thai" on:change={handleLanguageChange} /> Thai
       </label>
       <label>
-        <input type="checkbox" value="English" on:change={handleLanguageChange} /> English
+        <input
+          type="checkbox"
+          value="English"
+          on:change={handleLanguageChange}
+        /> English
       </label>
     </div>
 
@@ -173,19 +179,9 @@
     gap: 10px;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 1px;
     width: 100%;
     max-width: 500px;
-  }
-
-  .download-button {
-    padding: 10px 20px;
-    border: 1px solid #000;
-    background-color: #fff;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
   }
 
   .convert-button {
@@ -197,8 +193,6 @@
     cursor: pointer;
     border-radius: 5px;
   }
-
-  .download-button:hover,
   .convert-button:hover {
     background-color: #f0f0f0;
   }
@@ -207,7 +201,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-left: auto;
+    margin-right: auto;
   }
 
   label {

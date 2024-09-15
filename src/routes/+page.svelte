@@ -8,7 +8,11 @@
   let language: string[] = []; // เปลี่ยนเป็น array เพื่อรับค่าภาษาหลายภาษา
 
   // ฟังก์ชันสำหรับรับข้อมูลจาก ImageUpload เมื่อกดปุ่ม Convert
-  function handleConvert(uploadedImageUrl: string, uploadedText: string, selectedLanguage: string[]) {
+  function handleConvert(
+    uploadedImageUrl: string,
+    uploadedText: string,
+    selectedLanguage: string[]
+  ) {
     imageUrl = uploadedImageUrl;
     text = uploadedText;
     language = selectedLanguage;

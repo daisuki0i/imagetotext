@@ -1,102 +1,125 @@
 <script lang="ts">
-    export let imageUrl: string;
-    export let text: string = "Generated text will appear here...";
-    export let language: string[] = []; // รับค่าเป็น array ของภาษาหลายภาษา
-    export let clearResult: () => void; // รับฟังก์ชัน clearResult จาก +page.svelte
-  
-    // ฟังก์ชันสำหรับจัดการปุ่ม Clear
-    function handleClear() {
-      clearResult(); // เรียกใช้งาน clearResult ที่ถูกส่งเข้ามาจาก +page.svelte
-    }
-  </script>
-  
-  <div class="result-container">
-    <div class="image-container">
-      <img src={imageUrl} alt="Result Image" class="result-image" />
-    </div>
+  export let imageUrl: string;
+  export let text: string = "Generated text will appear here...";
+  export let language: string[] = []; // รับค่าเป็น array ของภาษาหลายภาษา
+  export let clearResult: () => void; // รับฟังก์ชัน clearResult จาก +page.svelte
+
+  // ฟังก์ชันสำหรับจัดการปุ่ม Clear
+  function handleClear() {
+    clearResult(); // เรียกใช้งาน clearResult ที่ถูกส่งเข้ามาจาก +page.svelte
+  }
+  // ฟังก์ชันสำหรับการดาวน์โหลด
+  function downloadFile() {
+    alert("Download button clicked.");
+  }
+</script>
+
+<div class="result-container">
+  <div class="image-container">
+    <img src={imageUrl} alt="Result Image" class="result-image" />
+  </div>
+  <div class="right-container">
     <textarea class="result-text" readonly>{text}</textarea>
     <div class="button-group">
       <!-- แสดงภาษาที่ผู้ใช้เลือกทั้งหมดในรูปแบบที่อ่านง่าย -->
-      <button class="language-button">{language.map(lang => lang === 'Thai' ? 'TH' : 'EN').join(' & ')}</button>
+      <button class="language-button"
+        >{language
+          .map((lang) => (lang === "Thai" ? "TH" : "EN"))
+          .join(" & ")}</button
+      >
       <div class="action-buttons">
         <button class="clear-button" on:click={handleClear}>Clear</button>
         <button class="reconvert-button">Re-convert</button>
+        <!-- ปุ่มดาวน์โหลด -->
+        <button class="download-button" on:click={downloadFile}>Download</button
+        >
       </div>
     </div>
   </div>
-  
-  <style>
-    .result-container {
-      border: 1px solid #ddd;
-      border-radius: 12px; /* เพิ่มขอบมน */
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      background-color: #ffffff; /* พื้นหลังสีขาว */
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
-      max-width: 320px; /* จำกัดความกว้าง */
-      margin: 10px auto; /* จัดให้อยู่กลางหน้า */
-    }
-  
-    .image-container {
-      width: 120px;
-      height: 120px;
-      overflow: hidden;
-      border-radius: 10px; /* เพิ่มขอบมนของภาพ */
-      border: 1px solid #ccc;
-    }
-  
-    .result-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  
-    .result-text {
-      width: 95%;
-      height: 70px;
-      resize: none;
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px; /* เพิ่มขอบมนของช่องข้อความ */
-    }
-  
-    .button-group {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-  
-    .language-button {
-      border: none;
-      padding: 6px 12px;
-      cursor: default;
-      font-size: 14px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      text-transform: uppercase; /* แสดงภาษาเป็นตัวพิมพ์ใหญ่ */
-    }
-  
-    .action-buttons {
-      display: flex;
-      gap: 6px;
-    }
-  
-    .clear-button,
-    .reconvert-button {
-      padding: 6px 12px;
-      border: 1px solid #000;
-      background-color: #ffffff;
-      cursor: pointer;
-      border-radius: 6px; /* เพิ่มขอบมน */
-      transition: background-color 0.3s;
-    }
-  
-    .clear-button:hover,
-    .reconvert-button:hover {
-      background-color: #f2f2f2; /* สีเมื่อเอาเมาส์ไปวาง */
-    }
-  </style>      
+</div>
+
+<style>
+  .result-container {
+    border: 1px solid #ddd;
+    border-radius: 12px; /* เพิ่มขอบมน */
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #ffffff; /* พื้นหลังสีขาว */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+    max-width: 480px; /* กำหนดขนาดความกว้างให้เท่ากับกรอบอัปโหลดรูปภาพ */
+    width: 480px; /* กำหนดขนาดความกว้างให้เท่ากับกรอบอัปโหลดรูปภาพ */
+    margin: 10px auto; /* จัดให้อยู่กลางหน้า */
+    margin-top: 30px; /* ขยับขึ้นจากด้านล่าง */
+  }
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .image-container {
+    height: 120px;
+    overflow: hidden;
+    border-radius: 10px; /* เพิ่มขอบมนของภาพ */
+    border: 1px solid #ccc;
+  }
+
+  .result-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .result-text {
+    width: 95%;
+    height: 70px;
+    resize: none;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px; /* เพิ่มขอบมนของช่องข้อความ */
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .language-button {
+    border: none;
+    padding: 6px 12px;
+    cursor: default;
+    font-size: 14px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    text-transform: uppercase; /* แสดงภาษาเป็นตัวพิมพ์ใหญ่ */
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .clear-button,
+  .reconvert-button,
+  .download-button {
+    padding: 6px 12px;
+    border: 1px solid #000;
+    background-color: #ffffff;
+    cursor: pointer;
+    border-radius: 6px; /* เพิ่มขอบมน */
+    transition: background-color 0.3s;
+  }
+
+  .clear-button:hover,
+  .reconvert-button:hover,
+  .download-button:hover {
+    background-color: #f2f2f2; /* สีเมื่อเอาเมาส์ไปวาง */
+  }
+</style>
