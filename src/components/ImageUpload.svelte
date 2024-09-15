@@ -26,6 +26,12 @@
       alert("Please upload an image first.");
       return;
     }
+
+    if (!selectedLanguage) {
+      alert("Please select a language before converting.");
+      return;
+    }
+
     alert(`Converting image: ${file.name}`);
   }
 
@@ -192,5 +198,3 @@
     font-size: 14px;
   }
 </style>
-
-  
