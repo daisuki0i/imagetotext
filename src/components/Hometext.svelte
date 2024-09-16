@@ -14,7 +14,19 @@
 <section>
   <h1 class="header">
     IMAGE <span style="color: #000000;">to</span>
-    <span style="color: #1D8B92;">TEXT 🇬🇧🇹🇭</span>
+    <span style="color: #1D8B92;">
+      TEXT
+      <img
+        src="/English.png"
+        alt="English Flag"
+        style="width: 30px; height: 20px; vertical-align: middle;"
+      />
+      <img
+        src="/Thai.png"
+        alt="Thai Flag"
+        style="width: 30px; height: 17px; vertical-align: middle;"
+      />
+    </span>
   </h1>
 
   <h2 class="title">Image Text Processing</h2>
