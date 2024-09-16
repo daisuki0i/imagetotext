@@ -67,12 +67,13 @@
   border: 1px solid #ccc;
 }
 
-  .result-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    aspect-ratio: 1/1;
-  }
+.result-image {
+  width: 100%; /* กำหนดความกว้างให้เต็มกรอบ */
+  height: 100%; /* กำหนดความสูงให้เต็มกรอบ */
+  object-fit: cover; /* ทำให้ภาพถูกครอบให้อยู่ในกรอบที่กำหนด */
+  border-radius: 10px; /* เพิ่มความมนของขอบ */
+}
+
 
   .result-text {
     width: 95%;

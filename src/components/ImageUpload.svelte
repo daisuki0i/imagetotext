@@ -13,6 +13,8 @@
   let showUploadOptions: boolean = false; // ควบคุมการแสดง pop-up อัปโหลด
   let imageUrls: string[] = []; // เก็บ URL ของรูปภาพที่อัปโหลด
 
+  let currentOutput: string = "";
+
   // ฟังก์ชันสำหรับจัดการอัปโหลดไฟล์
   function handleFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -35,7 +37,7 @@
   }
 
   // ฟังก์ชันสำหรับแปลงภาพเมื่อกดปุ่ม Convert
-  function convertImages() {
+  async function convertImages() {
     if (files.length === 0) {
       alert("Please upload at least one image.");
       return;
@@ -46,11 +48,43 @@
       return;
     }
 
-    handleConvert(
-      imageUrls,
-      Array(files.length).fill("Generated text from backend"),
-      selectedLanguage
-    );
+    const formData = new FormData();
+    // formData.append("file", files[0]);
+
+    files.forEach((file, index) => {
+      formData.append(`file_${index}`, file);
+    });
+
+    // console.log(formData);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      currentOutput = result;
+      let arrayCurrentOutput = Object.values(currentOutput);
+      console.log(typeof arrayCurrentOutput);
+      console.log(arrayCurrentOutput);
+
+      handleConvert(
+        imageUrls,
+        // Array(files.length).fill(currentOutput),
+        arrayCurrentOutput,
+        selectedLanguage
+      );
+    } catch (error) {
+      console.error("Error converting images:", error);
+    }
+
+    // handleConvert(
+    //   imageUrls,
+    //   Array(files.length).fill(currentOutput),
+    //   // currentOutput,
+
+    //   selectedLanguage
+    // );
 
     // เคลียร์ภาพที่ถูกอัปโหลดหลังการแปลง
     files = [];
@@ -92,7 +126,9 @@
     <div class="file-name-container">
       <strong>Uploaded {files.length} files:</strong>
       {#each files as file, index}
-        <span class="file-name">{file.name}{index < files.length - 1 ? ',' : ''}</span>
+        <span class="file-name"
+          >{file.name}{index < files.length - 1 ? "," : ""}</span
+        >
       {/each}
     </div>
   {/if}
@@ -105,6 +141,7 @@
     aria-label="Upload Image"
   >
     {#if imageUrls.length > 0}
+      <!-- แทนที่ส่วนนี้ด้วยโครงสร้างใหม่ที่จัดการไว้ -->
       <div class="image-gallery">
         {#each imageUrls as url}
           <img src={url} alt="Uploaded Image" class="uploaded-image" />
@@ -137,7 +174,11 @@
         <input type="checkbox" value="Thai" on:change={handleLanguageChange} /> Thai
       </label>
       <label>
-        <input type="checkbox" value="English" on:change={handleLanguageChange} /> English
+        <input
+          type="checkbox"
+          value="English"
+          on:change={handleLanguageChange}
+        /> English
       </label>
     </div>
 
@@ -145,7 +186,6 @@
     <button class="convert-button" on:click={convertImages}>Convert</button>
   </div>
 </div>
-
 
 <style>
   .upload-container {
@@ -157,23 +197,23 @@
   }
 
   .file-name-container {
-  display: flex;
-  flex-wrap: wrap; /* ให้ข้อความจัดเรียงต่อไปบรรทัดใหม่เมื่อเกินพื้นที่ */
-  gap: 5px;
-  max-width: 480px; /* กำหนดความกว้างสูงสุดให้เท่ากับกรอบที่อัปโหลดรูปภาพ */
-  margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างชื่อไฟล์กับกรอบ */
-}
+    display: flex;
+    flex-wrap: wrap; /* ให้ข้อความจัดเรียงต่อไปบรรทัดใหม่เมื่อเกินพื้นที่ */
+    gap: 5px;
+    max-width: 480px; /* กำหนดความกว้างสูงสุดให้เท่ากับกรอบที่อัปโหลดรูปภาพ */
+    margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างชื่อไฟล์กับกรอบ */
+  }
 
-strong {
-  font-size: 14px;
-  color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
-}
+  strong {
+    font-size: 14px;
+    color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
+  }
 
-.file-name {
-  font-size: 14px;
-  color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
-  word-break: break-all; /* ตัดข้อความเมื่อยาวเกินไป */
-}
+  .file-name {
+    font-size: 14px;
+    color: #333; /* ปรับสีข้อความเพื่อให้ดูชัดเจน */
+    word-break: break-all; /* ตัดข้อความเมื่อยาวเกินไป */
+  }
 
   .dropzone {
     border: 2px dashed #000;
@@ -191,11 +231,20 @@ strong {
     overflow: hidden;
   }
 
+  .image-gallery {
+    display: flex;
+    flex-wrap: wrap; /* จัดการการแสดงผลเมื่อภาพมีจำนวนมาก */
+    gap: 10px; /* เว้นระยะห่างระหว่างภาพ */
+    justify-content: center; /* จัดเรียงภาพให้อยู่กลาง */
+    max-width: 500px; /* กำหนดความกว้างสูงสุดเพื่อให้ภาพอยู่ในกรอบ */
+  }
+
   .uploaded-image {
-    max-width: 50px; /* ปรับขนาดให้เล็กเพื่อแสดงหลายรูป */
-    max-height: 50px;
-    object-fit: contain;
-    margin: 2px;
+    width: 100px; /* กำหนดความกว้างของภาพให้เท่ากัน */
+    height: 100px; /* กำหนดความสูงของภาพให้เท่ากัน */
+    object-fit: cover; /* จัดการภาพให้ครอบคลุมกรอบ */
+    border: 1px solid #ccc; /* เพิ่มขอบเพื่อความสวยงาม */
+    border-radius: 5px; /* เพิ่มความโค้งมนให้ภาพ */
   }
 
   .upload-popup {
