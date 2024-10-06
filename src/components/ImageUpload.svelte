@@ -14,6 +14,7 @@
   let imageUrls: string[] = []; // เก็บ URL ของรูปภาพที่อัปโหลด
 
   let currentOutput: string = "";
+  let FRTD: string;
 
   // ฟังก์ชันสำหรับจัดการอัปโหลดไฟล์
   function handleFileUpload(event: Event) {
@@ -36,6 +37,16 @@
     showUploadOptions = true;
   }
 
+  function downloadAll() {
+    const csvContent = `data:text/csv;charset=utf-8,Image URL,Text,Language\n${FRTD}`;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "converted_data.csv");
+    document.body.appendChild(link); // จำเป็นสำหรับการคลิกอัตโนมัติ
+    link.click(); // ทำการคลิกเพื่อดาวน์โหลด
+  }
+
   // ฟังก์ชันสำหรับแปลงภาพเมื่อกดปุ่ม Convert
   async function convertImages() {
     if (files.length === 0) {
@@ -55,9 +66,12 @@
       formData.append(`file_${index}`, file);
     });
 
-    // console.log(formData);
+    // Add an additional parameter to the formData
+    formData.append("language", selectedLanguage.join(","));
+
+    console.log(formData);
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
+      const response = await fetch("https://aiback.phachara.net/upload", {
         method: "POST",
         body: formData,
       });
@@ -68,6 +82,19 @@
       console.log(typeof arrayCurrentOutput);
       console.log(arrayCurrentOutput);
 
+      let downloadArray = new Array(imageUrls.length);
+      for (let i = 0; i < imageUrls.length; i++) {
+        downloadArray[i] = [];
+        downloadArray[i][0] = files[i].name; // URL ของรูปภาพ
+        downloadArray[i][1] = arrayCurrentOutput[i]; // ข้อความที่แปลงแล้ว
+        downloadArray[i][2] = selectedLanguage[i]; // ภาษา
+      }
+
+      // แปลง array เป็น CSV string
+      FRTD = downloadArray.map((row) => row.join(",")).join("\n");
+
+      console.log(FRTD); // ข้อมูลที่เตรียมไว้สำหรับดาวน์โหลด CSV
+
       handleConvert(
         imageUrls,
         // Array(files.length).fill(currentOutput),
@@ -76,15 +103,17 @@
       );
     } catch (error) {
       console.error("Error converting images:", error);
+      files = [];
+      imageUrls = [];
     }
 
-    // handleConvert(
-    //   imageUrls,
-    //   Array(files.length).fill(currentOutput),
-    //   // currentOutput,
+    handleConvert(
+      imageUrls,
+      Array(files.length).fill(currentOutput),
+      // currentOutput,
 
-    //   selectedLanguage
-    // );
+      selectedLanguage
+    );
 
     // เคลียร์ภาพที่ถูกอัปโหลดหลังการแปลง
     files = [];

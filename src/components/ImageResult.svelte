@@ -10,8 +10,22 @@
   }
 
   // ฟังก์ชันสำหรับการดาวน์โหลด
-  function downloadFile() {
-    alert("Download button clicked.");
+  function downloadFile() {     
+      // แยกชื่อไฟล์จาก URL ของภาพ
+      const imageName = imageUrl.split('/').pop(); 
+      const csvContent = `img,text,language\n${imageName},${text},${language.join(" & ")}\n`; // ใช้ชื่อไฟล์แทน URL
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); // สร้าง Blob จากข้อมูล CSV
+
+      // สร้างลิงก์ดาวน์โหลด
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data.csv'; // ชื่อไฟล์ CSV ที่จะดาวน์โหลด
+      a.click();
+      
+      URL.revokeObjectURL(url);// ลบลิงก์ที่ดาวน์โหลดเสร็จ
+      alert("Downloading..."); 
   }
 </script>
 

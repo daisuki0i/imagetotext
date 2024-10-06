@@ -5,23 +5,24 @@
 
   let imageUrls: string[] = [];
   let texts: string[] = [];
-  let language: string[] = [];
+  let languages: string[][] = []; // เก็บข้อมูลภาษาของแต่ละบล็อคแยกกัน
 
   // ฟังก์ชันจัดการเมื่อข้อมูลถูกส่งมาจาก ImageUpload
   function handleConvert(
     uploadedImageUrls: string[],
     uploadedTexts: string[],
-    selectedLanguage: string[]
+    selectedLanguages: string[]
   ) {
     imageUrls = uploadedImageUrls;
     texts = uploadedTexts;
-    language = selectedLanguage;
+    languages = uploadedImageUrls.map(() => selectedLanguages); // เก็บภาษาสำหรับแต่ละบล็อค
   }
 
-  function clearResult() {
-    imageUrls = [];
-    texts = [];
-    language = [];
+  // ฟังก์ชันจัดการการลบเฉพาะบล็อคที่ถูกกด clear
+  function clearResult(index: number) {
+    imageUrls = [...imageUrls.slice(0, index), ...imageUrls.slice(index + 1)];
+    texts = [...texts.slice(0, index), ...texts.slice(index + 1)];
+    languages = [...languages.slice(0, index), ...languages.slice(index + 1)]; // ลบข้อมูลภาษาของบล็อคนั้นด้วย
   }
 </script>
 
@@ -29,7 +30,7 @@
   <Hometext />
   <ImageUpload {handleConvert} />
   {#each imageUrls as imageUrl, index}
-    <ImageResult {imageUrl} text={texts[index]} {language} {clearResult} />
+    <ImageResult {imageUrl} text={texts[index]} language={languages[index]} clearResult={() => clearResult(index)} />
   {/each}
 </div>
 
@@ -45,3 +46,5 @@
     box-sizing: border-box;
   }
 </style>
+
+
