@@ -212,6 +212,7 @@
     </div>
 
     <!-- ปุ่ม Convert -->
+    <button class="download-button" on:click={downloadAll}>Download All</button>
     <button class="convert-button" on:click={convertImages}>Convert</button>
   </div>
 </div>
@@ -310,6 +311,16 @@
   }
   .convert-button:hover {
     background-color: #f0f0f0;
+  }
+
+  .download-button {
+    padding: 10px 20px;
+    border: 1px solid #000;
+    background-color: #fff;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
   }
 
   .language-options {
