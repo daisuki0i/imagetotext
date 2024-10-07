@@ -1,8 +1,15 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import speakerIcon from "$lib/images/speaker.svg"
+
   export let imageUrl: string;
   export let text: string = "Generated text will appear here...";
   export let language: string[] = []; // รับค่าเป็น array ของภาษาหลายภาษา
   export let clearResult: () => void; // รับฟังก์ชัน clearResult จาก +page.svelte
+  export let speech: string;
+
+  let thai = "";
+  let eng = "";
 
   // ฟังก์ชันสำหรับจัดการปุ่ม Clear
   function handleClear() {
@@ -12,8 +19,9 @@
   // ฟังก์ชันสำหรับการดาวน์โหลด
   function downloadFile() {     
       // แยกชื่อไฟล์จาก URL ของภาพ
-      const imageName = imageUrl.split('/').pop(); 
-      const csvContent = `img,text,language\n${imageName},${text},${language.join(" & ")}\n`; // ใช้ชื่อไฟล์แทน URL
+      const imageName = imageUrl.split("/").pop();
+
+      const csvContent = `English,Thai\n${eng},${thai}\n`;
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); // สร้าง Blob จากข้อมูล CSV
 
@@ -21,30 +29,61 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'data.csv'; // ชื่อไฟล์ CSV ที่จะดาวน์โหลด
+      a.download = `${imageName}_caption.csv`; // ชื่อไฟล์ CSV ที่จะดาวน์โหลด
       a.click();
       
       URL.revokeObjectURL(url);// ลบลิงก์ที่ดาวน์โหลดเสร็จ
       alert("Downloading..."); 
   }
+
+  onMount(() => {
+    if (language.length === 1 && language[0] === "English") {
+        eng = text;
+      } else if (language.length === 1 && language[0] === "Thai") {
+        thai = text;
+      } else {
+        [eng, thai] = text.split("\n");
+      }
+  });
 </script>
 
 <div class="result-container">
   <div class="image-container">
     <img src={imageUrl} alt="Result Image" class="result-image" />
+    <!-- แสดงภาษาที่ผู้ใช้เลือกทั้งหมดในรูปแบบที่อ่านง่าย -->
+    <button class="language-button">
+      {#if language.length === 1}
+        {language[0] === "English" ? "EN" : "TH"}
+      {:else}
+        EN & TH
+      {/if}
+    </button>
   </div>
   <div class="right-container">
-    <textarea class="result-text">{text}</textarea>
+    {#if eng}
+      <textarea class="result-text" bind:value={eng}></textarea>
+    {/if}
+    {#if thai}
+      <textarea class="result-text" bind:value={thai}></textarea>
+    {/if}
     <div class="button-group">
-      <!-- แสดงภาษาที่ผู้ใช้เลือกทั้งหมดในรูปแบบที่อ่านง่าย -->
-      <button class="language-button">
-        {language.map((lang) => (lang === "Thai" ? "TH" : "EN")).join(" & ")}
-      </button>
       <div class="action-buttons">
+        <button class="reconvert-button" on:click={() => {
+          const audio = new Audio();
+          audio.src = `data:audio/mp3;base64,${speech}`;
+          audio.play();
+        }}>
+          <img src={speakerIcon} alt="Speaker Icon" width="14" height="14" />
+        </button>
         <button class="clear-button" on:click={handleClear}>Clear</button>
-        <button class="reconvert-button">Re-convert</button>
         <!-- ปุ่มดาวน์โหลด -->
         <button class="download-button" on:click={downloadFile}>Download</button>
+
+        <button class="download-button" on:click={() => {
+          const text = `<img src="path/to/image" alt="${eng}/${thai}"></img>`;
+          navigator.clipboard.writeText(text);
+          alert("Copied to clipboard!");
+        }}>Copy Code</button>
       </div>
     </div>
   </div>
@@ -69,6 +108,7 @@
   .right-container {
     display: flex;
     flex-direction: column;
+    align-items: end;
     width: 100%;
     gap: 10px;
   }
@@ -76,9 +116,12 @@
 .image-container {
   width: 120px; /* กำหนดขนาดความกว้างเท่ากับความสูง */
   height: 120px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  /* overflow: hidden; */
   border-radius: 10px;
-  border: 1px solid #ccc;
 }
 
 .result-image {
@@ -130,6 +173,9 @@
     cursor: pointer;
     border-radius: 6px;
     transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .clear-button:hover,

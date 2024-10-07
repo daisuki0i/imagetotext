@@ -5,13 +5,16 @@
   export let handleConvert: (
     uploadedImageUrls: string[], // รับ URL รูปภาพหลายรายการ
     uploadedTexts: string[], // รับข้อความหลายรายการ
-    selectedLanguage: string[] // รับภาษาหลายภาษา
+    selectedLanguage: string[], // รับภาษาหลายภาษา
+    speechesFromApi: string[] // รับออบเจ็กต์เสียงหลายรายการ
   ) => void;
 
   let files: File[] = []; // เก็บไฟล์ที่อัปโหลดทั้งหมดในรูปแบบ array
   let selectedLanguage: string[] = []; // เก็บภาษาที่เลือกเป็น array
   let showUploadOptions: boolean = false; // ควบคุมการแสดง pop-up อัปโหลด
   let imageUrls: string[] = []; // เก็บ URL ของรูปภาพที่อัปโหลด
+
+  let isLoading: boolean = false;
 
   let currentOutput: string = "";
   let FRTD: string;
@@ -38,15 +41,15 @@
   }
 
   function downloadAll() {
-    const csvContent = `data:text/csv;charset=utf-8,Image URL,Text,Language\n${FRTD}`;
+    const csvContent = `data:text/csv;charset=utf-8,Image URL,English,Thai\n${FRTD}`;
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "converted_data.csv");
+    link.setAttribute("download", "captions.csv");
     document.body.appendChild(link); // จำเป็นสำหรับการคลิกอัตโนมัติ
     link.click(); // ทำการคลิกเพื่อดาวน์โหลด
   }
-
+  
   // ฟังก์ชันสำหรับแปลงภาพเมื่อกดปุ่ม Convert
   async function convertImages() {
     if (files.length === 0) {
@@ -69,27 +72,40 @@
     // Add an additional parameter to the formData
     formData.append("language", selectedLanguage.join(","));
 
-    console.log(formData);
     try {
+      isLoading = true;
       const response = await fetch("https://aiback.phachara.net/upload", {
         method: "POST",
         body: formData,
       });
 
       const result = await response.json();
-      currentOutput = result;
+      currentOutput = result.captions;
+
+      const tts: string[] = result.tts;
+      console.log(tts);
+
       let arrayCurrentOutput = Object.values(currentOutput);
       console.log(typeof arrayCurrentOutput);
       console.log(arrayCurrentOutput);
 
       let downloadArray = new Array(imageUrls.length);
       for (let i = 0; i < imageUrls.length; i++) {
+        let thai = "";
+        let eng = "";
+        if (arrayCurrentOutput[i].includes("\n")) {
+          [eng, thai] = arrayCurrentOutput[i].split("\n");
+        } else if (selectedLanguage[i] === "Thai") {
+          thai = arrayCurrentOutput[i];
+        } else {
+          eng = arrayCurrentOutput[i];
+        }
+
         downloadArray[i] = [];
         downloadArray[i][0] = files[i].name; // URL ของรูปภาพ
-        downloadArray[i][1] = arrayCurrentOutput[i]; // ข้อความที่แปลงแล้ว
-        downloadArray[i][2] = selectedLanguage[i]; // ภาษา
+        downloadArray[i][1] = eng; // ข้อความภาษาอังกฤษ
+        downloadArray[i][2] = thai; // ข้อความภาษาไทย
       }
-
       // แปลง array เป็น CSV string
       FRTD = downloadArray.map((row) => row.join(",")).join("\n");
 
@@ -97,9 +113,9 @@
 
       handleConvert(
         imageUrls,
-        // Array(files.length).fill(currentOutput),
         arrayCurrentOutput,
-        selectedLanguage
+        selectedLanguage,
+        tts
       );
     } catch (error) {
       console.error("Error converting images:", error);
@@ -107,17 +123,11 @@
       imageUrls = [];
     }
 
-    handleConvert(
-      imageUrls,
-      Array(files.length).fill(currentOutput),
-      // currentOutput,
-
-      selectedLanguage
-    );
-
     // เคลียร์ภาพที่ถูกอัปโหลดหลังการแปลง
     files = [];
     imageUrls = [];
+
+    isLoading = false;
   }
 
   // ฟังก์ชันสำหรับปิด pop-up เมื่อกดปุ่ม Cancel
@@ -213,7 +223,13 @@
 
     <!-- ปุ่ม Convert -->
     <button class="download-button" on:click={downloadAll}>Download All</button>
-    <button class="convert-button" on:click={convertImages}>Convert</button>
+    <button class="convert-button" on:click={convertImages} disabled={isLoading}>
+      {#if isLoading}
+        Loading...
+      {:else}
+        Convert
+      {/if}
+    </button>
   </div>
 </div>
 
